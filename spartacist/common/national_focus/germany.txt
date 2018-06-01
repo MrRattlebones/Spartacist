@@ -1,0 +1,256 @@
+focus_tree = {
+	id = german_focus
+
+	country = {
+		factor = 0
+		
+		modifier = {
+			add = 10
+			tag = GER
+		}
+	}
+	
+		focus = {
+		id = GER_politics
+		icon = GFX_goal_generic_demand_territory
+		x = 5
+		y = 0
+		cost = 10
+
+		available_if_capitulated = yes
+
+		completion_reward = {
+			add_political_power = 150
+		}
+	}
+###################Thalmann Line####################
+		focus = {
+		id = GER_thalmann
+		icon = GFX_goal_support_communism
+
+		prerequisite = { focus = GER_politics }
+		mutually_exclusive = { focus = GER_luxemburg} 
+		x = 6
+		y = 1
+		cost = 4
+
+		available_if_capitulated = no
+
+		
+		completion_reward = {
+			ROOT = { country_event = { id = germany.1 } }
+			GER = {
+				add_opinion_modifier = { target = SOV modifier = anti_capitalist_diplomacy_focus }
+				}
+
+			SOV = {
+				add_opinion_modifier = { target = GER modifier = anti_capitalist_diplomacy_focus }
+				}
+		}
+	}
+
+	focus = {
+		id = GER_german_soviet
+		icon = GFX_goal_generic_scientific_exchange
+
+		prerequisite = { focus = GER_thalmann }
+		available = {
+			SOV = {
+				NOT = { has_war_with = GER }
+				country_exists = SOV
+			}
+			}
+		cancel = {
+			OR = {
+				has_war_with = SOV
+				NOT = { country_exists = SOV }
+			}
+		}
+		x = 6
+		y = 2
+		cost = 10
+
+		available_if_capitulated = no
+
+		
+		completion_reward = {
+			SOV = {
+				country_event = { id = germany.75 days = 1 }
+				custom_effect_tooltip = needs_approval
+			}
+			# Actual reward effects added in event if Soviets approve
+			effect_tooltip = {
+				# Trade influence with the USSR? Or simply let the opinion mod do the work
+				add_tech_bonus = {
+					name = med_armor_bonus
+					bonus = 0.5
+					ahead_reduction = 1
+					technology = basic_medium_tank
+				}
+				# Balance research bonus to 2 techs in armor, also in event
+				add_tech_bonus = {
+					name = armor_bonus
+					bonus = 0.5
+					uses = 2
+					category = armor
+				}
+			}
+		}
+	}
+	
+	focus = {
+		id = GER_divide_poland
+		icon = GFX_goal_molotov_ribbentrop_pact
+		prerequisite = { focus = GER_german_soviet }
+		available = {
+			is_puppet = no
+			has_government = communism
+			has_army_manpower = { size > 849999 } #ca 90 div
+			SOV = {
+				NOT = { has_war_with = GER }
+				country_exists = SOV
+			}
+		}
+		cancel = {
+			OR = {
+				has_war_with = SOV
+				NOT = { country_exists = SOV }
+			}
+		}
+		cancel_if_invalid = no
+		x = 6
+		y = 3
+		cost = 10
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				factor = 0
+				NOT = { has_completed_focus = GER_anti_comitern_pact }
+			}
+		}	
+		completion_reward = {
+			add_state_claim = 85
+			add_state_claim = 86
+			add_state_claim = 5
+			add_state_claim = 792
+			SOV = {
+				country_event = { id = germany.11 days = 1}
+				custom_effect_tooltip = needs_approval
+			}
+		}
+	}
+	
+		focus = {
+		id = GER_join_comintern
+		icon = GFX_goal_support_communism
+	 	available = {
+	 		is_puppet = no
+	 		is_in_faction = no
+	 		OR = {
+	 			has_government = communism
+	 			communism > 0.4
+	 		}
+	 		has_war = no
+ 			SOV = {
+ 				exists = yes
+ 				has_government = communism
+ 				is_faction_leader = yes
+ 			}
+		}
+	 	prerequisite = { focus = GER_divide_poland }
+	 	bypass = {
+	 		is_in_faction_with = SOV
+	 	}
+		x = 6
+		y = 4
+		cost = 10
+
+		available_if_capitulated = yes
+
+		#ai_will_do = {
+		#	factor = 1
+		#}
+		completion_reward = {
+			SOV = { country_event = { id = soviet.38 days = 1 } }
+		}
+	}	
+###################Luxemburg Line####################
+		focus = {
+		id = GER_luxemburg
+		icon = GFX_focus_YUG_pan_slavic_congress
+		prerequisite = { focus = GER_politics }
+		mutually_exclusive = { focus = GER_thalmann} 
+		x = 4
+		y = 1
+		cost = 4
+
+		available_if_capitulated = yes
+
+		completion_reward = {
+			add_stability = 0.10
+		}
+	}
+	
+		focus = {
+		id = GER_faction
+		icon = GFX_goal_generic_war_with_comintern
+		prerequisite = { focus = GER_luxemburg }
+		x = 4
+		y = 2
+		cost = 10
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			CZE = {
+				add_opinion_modifier = { target = GER modifier = ita_diplomacy_focus }
+				if = {
+					limit = { ROOT = { has_government = fascism } }
+					add_ideas = fascist_influence
+				}
+				if = {
+					limit = { ROOT = { has_government = democratic } }
+					add_ideas = democratic_influence
+				}
+				if = {
+					limit = { ROOT = { has_government = communism } }
+					add_ideas = communist_influence
+				}
+				country_event = { id = generic.1 }
+			}
+			POL = {
+				add_opinion_modifier = { target = GER modifier = ita_diplomacy_focus }
+				if = {
+					limit = { ROOT = { has_government = fascism } }
+					add_ideas = fascist_influence
+				}
+				if = {
+					limit = { ROOT = { has_government = democratic } }
+					add_ideas = democratic_influence
+				}
+				if = {
+					limit = { ROOT = { has_government = communism } }
+					add_ideas = communist_influence
+				}
+				country_event = { id = generic.1 }
+			}
+			AUS = {
+				add_opinion_modifier = { target = GER modifier = ita_diplomacy_focus }
+				if = {
+					limit = { ROOT = { has_government = fascism } }
+					add_ideas = fascist_influence
+				}
+				if = {
+					limit = { ROOT = { has_government = democratic } }
+					add_ideas = democratic_influence
+				}
+				if = {
+					limit = { ROOT = { has_government = communism } }
+					add_ideas = communist_influence
+				}
+				country_event = { id = generic.1 }
+			}
+		}
+	}
+	
+	
